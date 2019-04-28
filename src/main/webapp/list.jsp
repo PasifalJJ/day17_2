@@ -6,7 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
     <!-- 指定字符集 -->
@@ -21,11 +21,11 @@
     <title>用户信息管理系统</title>
 
     <!-- 1. 导入CSS的全局样式 -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet">
     <!-- 2. jQuery导入，建议使用1.9以上的版本 -->
-    <script src="js/jquery-2.1.0.min.js"></script>
+    <script src="${pageContext.request.contextPath}/js/jquery-2.1.0.min.js"></script>
     <!-- 3. 导入bootstrap的js文件 -->
-    <script src="js/bootstrap.min.js"></script>
+    <script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
     <style type="text/css">
         td, th {
             text-align: center;
@@ -35,35 +35,107 @@
 <body>
 <div class="container">
     <h3 style="text-align: center">用户信息列表</h3>
-    <table border="1" class="table table-bordered table-hover">
-        <tr class="success">
-            <th>编号</th>
-            <th>姓名</th>
-            <th>性别</th>
-            <th>年龄</th>
-            <th>籍贯</th>
-            <th>QQ</th>
-            <th>邮箱</th>
-            <th>操作</th>
-        </tr>
+    <div>
+        <form class="form-inline">
+            <div>
+                <div style="float: left;margin-bottom: 20px">
+                    <div class="form-group">
+                        <label for="name">姓名</label>
+                        <input type="text" class="form-control" id="name" placeholder="姓名">
+                    </div>
+                    <div class="form-group">
+                        <label for="address">籍贯</label>
+                        <input type="text" class="form-control" id="address" placeholder="籍贯">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">邮箱</label>
+                        <input type="email" class="form-control" id="email" placeholder="邮箱">
+                    </div>
+                    <button type="submit" class="btn btn-default">查询</button>
+                </div>
+                <div style="float: right">
+                    <!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
+                    <button type="button" class="btn btn-primary" onclick="add();">添加联系人</button>
+                    <button type="button" class="btn btn-primary" onclick="deleteSlectUser();">删除选中</button>
+                </div>
+            </div>
 
-        <c:forEach items="${userList}" var="user" varStatus="ct">
-            <td>${user.id}</td>
-            <td>${user.name}</td>
-            <td>${user.gender}</td>
-            <td>${user.age}</td>
-            <td>${user.address}</td>
-            <td>${user.qq}</td>
-            <td>${user.email}</td>
-            <td><a class="btn btn-default btn-sm" href="update.html">修改</a>&nbsp;<a class="btn btn-default btn-sm" href="">删除</a></td>
 
-        </c:forEach>
+            <table border="1" class="table table-bordered table-hover">
+                <tr class="success">
+                    <th><input type="checkbox" id="checkboxTotal"></th>
+                    <th>编号</th>
+                    <th>姓名</th>
+                    <th>性别</th>
+                    <th>年龄</th>
+                    <th>籍贯</th>
+                    <th>QQ</th>
+                    <th>邮箱</th>
+                    <th>操作</th>
+                </tr>
+                <c:forEach items="${userList}" var="user" varStatus="ct">
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="checkbox" value="${user.id}">
+                            <input type="hidden" name="id" value="${user.id}">
+                        </td>
+                        <td>${ct.count}</td>
+                        <td>${user.name}</td>
+                        <td>${user.gender}</td>
+                        <td>${user.age}</td>
+                        <td>${user.address}</td>
+                        <td>${user.qq}</td>
+                        <td>${user.email}</td>
+                        <td>
+                            <a class="btn btn-default btn-sm"
+                               href="${pageContext.request.contextPath}/user/updateShow/${user.id}">修改</a>&nbsp;
+                            <a class="btn btn-default btn-sm"
+                               href="${pageContext.request.contextPath}/user/deleteUser/${user.id}">删除</a>
+                        </td>
+                    </tr>
+                </c:forEach>
 
-
-        <tr>
-            <td colspan="8" align="center"><a class="btn btn-primary" href="add.html">添加联系人</a></td>
-        </tr>
-    </table>
+                <%-- <tr>
+                     <td colspan="8" align="center">
+                         <a class="btn btn-primary" href="${pageContext.request.contextPath}/add.jsp">添加联系人</a>
+                     </td>
+                 </tr>--%>
+            </table>
+        </form>
+    </div>
 </div>
+<script>
+    function add() {
+        location.href = "${pageContext.request.contextPath}/add.jsp";
+    }
+
+    function deleteSlectUser() {
+        var checkEles = document.getElementsByName("checkbox");
+        var loca = "";
+        for (var i = 0; i < checkEles.length; i++) {
+            if (checkEles[i].checked) {
+                var value = checkEles[i].value;
+                loca += ("checkbox=" + value + "&");
+            }
+        }
+
+        if (loca.endsWith("&")) {
+            loca = loca.substring(0, loca.length - 1);
+        }
+        var xx = "${pageContext.request.contextPath}/user/deleteSlectUser?" + loca;
+        location.href = "${pageContext.request.contextPath}/user/deleteSlectUser?" + loca;
+    }
+
+    window.onload = function () {
+        var checkboxEle = document.getElementById("checkboxTotal");
+        checkboxEle.onclick = function () {
+            var flag = checkboxEle.checked;
+            var checkboxEles = document.getElementsByName("checkbox");
+            for (var i = 0; i < checkboxEles.length; i++) {
+                checkboxEles[i].checked = flag;
+            }
+        }
+    }
+</script>
 </body>
 </html>

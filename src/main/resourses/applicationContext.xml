@@ -31,7 +31,7 @@
         <property name="userDao" ref="userDao"/>
     </bean>
 
-    <bean id="userController" class="com.jsc.web.mvc.UserController">
+    <bean id="userController" class="com.jsc.web.mvc.impl.UserController">
         <property name="userService" ref="userService"/>
     </bean>-->
 
